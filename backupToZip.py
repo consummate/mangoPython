@@ -5,20 +5,36 @@
 import zipfile, os
 
 def backupToZip(folder):
-	# Backup the entire contents of "folder" into a ZIP file.
+    # Backup the entire contents of "folder" into a ZIP file.
 
-	folder = os.path.abspath(folder) # make sure folder is absolute
-	# Figure out the filename this code should use based on
-	# what files already exist.
-	number = 1
-	while True:
-		zipfilename = os.path.basename(folder)+'_'+str(number)+'.zip'
-		if not os.path.exists(zipfilename):
-			break
-		number = number+1
+    folder = os.path.abspath(folder) # make sure folder is absolute
+    # Figure out the filename this code should use based on
+    # what files already exist.
+    number = 1
+    while True:
+        zipfilename = os.path.basename(folder)+'_'+str(number)+'.zip'
+        print(zipfilename)
+        if not os.path.exists(zipfilename):
+            break
+        number = number+1
 
-		#TODO: Create the Zip file.
+    #Create the Zip file.
+    print('Creating %s...' %(zipfilename))
+    backupZip = zipfile.ZipFile(zipfilename, 'w')
 
-		#TODO: Walk the entire folder tree and compress the files in each folder.
+    # Walk the entire folder tree and compress the files in each folder.
+    for foldername, subfolders, filenames in os.walk(folder):
+        print('Adding files in %s...' %(foldername))
+        # Add rge current folde to the ZIP file.
+        backupZip.write(foldername)
+        # Add all the files in this folder to the ZIP files
+        print('filenames: %s...' %(filenames))
+        for filename in filenames:
+            newBase = os.path.basename(folder)+'_'
+            if filename.startswith(newBase) and filename.endswith('.zip'):
+                continue # don't backup the backup ZIP files
+            backupZip.write(os.path.join(foldername, filename))
+    backupZip.close()
+    print('Done.')
 
-	backupToZip('C:\\delicious')
+backupToZip('D:\\delicious')
